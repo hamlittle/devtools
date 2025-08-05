@@ -1,0 +1,164 @@
+---
+- name: Setup dev environment
+  hosts: all
+  gather_facts: true
+  vars:
+    target_user: "{{ ansible_user | default(ansible_env.USER) }}"
+    home_dir: "{{ ansible_env.HOME | default('/home/' + target_user) }}"
+
+  tasks:
+    - name: Clone devtools
+      git:
+        repo: https://github.com/hamlittle/devtools.git
+        dest: "{{ home_dir }}/devtools"
+        version: main
+        update: false
+      tags: [devtools]
+
+    - name: Update devtools
+      git:
+        repo: https://github.com/hamlittle/devtools.git
+        dest: "{{ home_dir }}/devtools"
+        version: main
+        update: true
+      tags: [never, force]
+
+    - name: Install packages
+      become: true
+      apt:
+        name:
+          - fzf
+          - git
+        update_cache: true
+      tags: [packages]
+
+    - name: Add fish shell PPA
+      become: true
+      apt_repository:
+        repo: ppa:fish-shell/release-4
+      tags: [fish]
+
+    - name: Install fish shell
+      become: true
+      package:
+        name: fish
+      tags: [fish]
+
+    - name: Change default shell to fish
+      become: true
+      user:
+        user: "{{ target_user }}"
+        shell: /usr/bin/fish
+      tags: [fish]
+
+    - name: Install fisher
+      shell:
+        curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+      args:
+        executable: /usr/bin/fish
+      tags: [fish]
+
+    - name: Install fish plugins
+      shell: "fisher install {{ item }}"
+      args:
+        executable: /usr/bin/fish
+      with_items:
+        - edc/bass
+        - jomik/fish-gruvbox
+        - IlanCosman/tide@v6
+      tags: [fish]
+
+    - name: Configure tide
+      shell:
+        tide configure --auto \
+          --style=Lean \
+          --prompt_colors='16 colors' \
+          --show_time='24-hour format' \
+          --lean_prompt_height='Two lines' \
+          --prompt_connection=Disconnected \
+          --prompt_spacing=Compact \
+          --icons='Few icons' \
+          --transient=No
+      args:
+        executable: /usr/bin/fish
+      tags: [fish]
+
+    - name: Install fish.conf
+      copy:
+        src: ../dotfiles/config.fish
+        dest: "{{ home_dir }}/.config/fish/config.fish"
+
+    - name: Check if rustup is already installed
+      stat:
+        path: "{{ home_dir }}/.cargo/bin/rustup"
+      register: rustup_check
+      tags: [utils, rust]
+
+    - name: Install rustup
+      shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      when: not rustup_check.stat.exists
+      tags: [utils, rust]
+
+    - name: Install rust plugins
+      command: "{{ home_dir }}/.cargo/bin/cargo install --locked {{ item }}"
+      with_items:
+        - yazi-cli
+        - yazi-fm
+        - zoxide
+        - just
+      tags: [utils]
+
+    - name: Check if go is already installed
+      stat:
+        path: "/usr/local/go/bin/go"
+      register: go_check
+      tags: [utils, go]
+
+    - name: Install Go
+      block:
+        - name: Get latest Go version
+          uri:
+            url: "https://go.dev/VERSION?m=text"
+            return_content: yes
+          register: go_version_response
+
+        - name: Set Go version variable
+          set_fact:
+            go_version: "{{ go_version_response.content.split('\n')[0] | trim }}"
+
+        - name: Set Go architecture
+          set_fact:
+            go_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
+
+        - name: Download Go tarball
+          get_url:
+            url: "https://go.dev/dl/{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+            dest: "/tmp/{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+            mode: '0644'
+
+        - name: Remove existing Go installation
+          become: true
+          file:
+            path: /usr/local/go
+            state: absent
+
+        - name: Extract Go tarball
+          become: true
+          unarchive:
+            src: "/tmp/{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+            dest: /usr/local
+            remote_src: yes
+            creates: /usr/local/go/bin/go
+
+        - name: Clean up temporary Go tarball
+          file:
+            path: "/tmp/{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+            state: absent
+      when: not go_check.stat.exists
+      tags: [utils, go]
+
+    - name: Install go plugins
+      command: /usr/local/go/bin/go install {{ item }}
+      with_items:
+        - github.com/jesseduffield/lazygit@latest
+      tags: [utils]
