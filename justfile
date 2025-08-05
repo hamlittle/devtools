@@ -8,7 +8,7 @@ default: help
 help:
   @just --list --unsorted
 
-# Initialize repo (venv + Ansible)
+# Initialize venv
 init:
   python3 -m venv venv
   venv/bin/pip install --upgrade pip
@@ -18,10 +18,9 @@ init:
 _init:
   @just init > /dev/null
 
-# List ansible tags
-[group('target')]
-tags: _init
-  {{ venv }} && ansible-playbook -i inventory.yml playbooks/dev-env.yml --list-tags
+# Query inventory
+list-hosts: _init
+  {{ venv }} && ansible-inventory -i inventory.yml --graph
 
 # Setup a machine for development
 [group('target')]
