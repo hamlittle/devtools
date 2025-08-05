@@ -14,9 +14,6 @@ hayden:
     vm:
       ansible_user: hlittle
       ansible_host: 192.168.64.7
-    yocto-builder:
-      ansible_user: hlittle
-      ansible_host: 10.0.121.90
     small-yocto-builder:
       ansible_user: hlittle
       ansible_host: 10.0.120.243
