@@ -25,8 +25,8 @@ tags: _init
 
 # Setup a machine for development
 [group('target')]
-install target="localhost" tags="all": _init
-  {{ venv }} && ansible-playbook -i inventory.yml playbooks/dev-env.yml --ask-become-pass --limit {{ target }} --tags {{ tags }}
+setup-dev target="localhost" tags="all": _init
+  {{ venv }} && ansible-playbook -i inventory.yml playbooks/setup-dev.yml --ask-become-pass --limit {{ target }} --tags {{ tags }}
 
 # Enable passwordless sudo (reduces security - use only on trusted systems)
 [group('target')]

@@ -1,6 +1,6 @@
 ---
 - name: Setup dev environment
-  hosts: all
+  hosts: all, localhost
   gather_facts: true
   vars:
     target_user: "{{ ansible_user | default(ansible_env.USER) }}"
