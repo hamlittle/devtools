@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# download_gh_artifact - Downloads artifacts from a Github Action
+#
+# This scripts converts the WebPage version of Github's URL to the corresponding
+# GithubAPI URL automatically.
+
+set -euo pipefail
+
+# Usage help
+usage() {
+  echo "Usage:"
+  echo "  $0 --url <artifact_url> [-o output.zip]"
+  exit 1
+}
+
+URL=""
+OUTPUT_NAME=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --url)
+      URL="$2"
+      shift 2
+      ;;
+    -o)
+      OUTPUT_NAME="$2"
+      shift 2
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+if [[ -z "$URL" ]]; then
+  usage
+fi
+
+# Extract info from URL
+if [[ "$URL" =~ github\.com/([^/]+)/([^/]+)/actions/.*/artifacts/([0-9]+) ]]; then
+  OWNER="${BASH_REMATCH[1]}"
+  REPO="${BASH_REMATCH[2]}"
+  ARTIFACT_ID="${BASH_REMATCH[3]}"
+else
+  echo "[ERROR] Invalid GitHub Actions artifact URL format."
+  exit 1
+fi
+
+# Set default output name if not provided
+if [[ -z "$OUTPUT_NAME" ]]; then
+  OUTPUT_NAME="${ARTIFACT_ID}.zip"
+fi
+
+# Construct API URL
+API_URL="https://api.github.com/repos/$OWNER/$REPO/actions/artifacts/$ARTIFACT_ID/zip"
+echo "[INFO] Downloading artifact..."
+echo "[INFO] From: $API_URL"
+echo "[INFO] To:   $OUTPUT_NAME"
+
+# Download using GH_TOKEN
+curl -L \
+  -H "Authorization: Bearer ${GH_TOKEN:-}" \
+  -H "Accept: application/vnd.github+json" \
+  "$API_URL" -o "$OUTPUT_NAME"
