@@ -34,22 +34,8 @@ just help
 **(re)Setup an environment**
 
 ```
-just dev-env <server>
+just install <server>
 ```
 
 * Replace <server> with hostname from `inventory.yml`.
 * Or, use `localhost` to run it locally.
-
-**Pull changes**
-
-The dev-env won't pull changes (destructive) by default. Use the `force` tag.
-
-```
-just dev-env <server> force
-```
-
-**Passwordless Sudo**
-
-```
-just easy-sudo <server>
-```

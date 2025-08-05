@@ -21,7 +21,7 @@
         dest: "{{ home_dir }}/devtools"
         version: main
         update: true
-      tags: [never, force]
+      tags: [devtools]
 
     - name: Create devtools/bin
       file:
