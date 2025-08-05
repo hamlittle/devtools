@@ -6,6 +6,7 @@ end
 
 fish_add_path "$HOME/devtools/bin"
 fish_add_path "$HOME/devtools/scripts"
+fish_add_path "/usr/local/go/bin"
 
 alias lgi='lazygit'
 
