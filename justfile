@@ -12,7 +12,7 @@ init:
 
 [group('install')]
 tags:
-  ansible-playbook -i inventory.yml playbooks/install.yml --list-tags
+  ansible-playbook -i inventory.yml playbooks/dev-env.yml --list-tags
 
 # Setup a machine for development
 [group('install')]
