@@ -46,6 +46,7 @@
           - curl
           - hyperfine
           - neofetch
+          - glances
         update_cache: true
       tags: [packages]
 
