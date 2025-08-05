@@ -10,10 +10,10 @@ hayden:
   hosts:
     device-server-9:
       ansible_user: hlittle
-      ansible_host: 10.0.121.35
+      ansible_host: device-server-9
     vm:
       ansible_user: hlittle
-      ansible_host: 192.168.64.7
+      ansible_host: vm
     small-yocto-builder:
       ansible_user: hlittle
-      ansible_host: 10.0.120.243
+      ansible_host: small-yocto-builder
