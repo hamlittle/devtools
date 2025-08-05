@@ -9,6 +9,8 @@ help:
 init:
   python3 -m venv venv
   venv/bin/pip install -r requirements.txt
+  @echo "Remember to source the venv: "
+  @echo "  source venv/bin/activate"
 
 [group('install')]
 tags:
