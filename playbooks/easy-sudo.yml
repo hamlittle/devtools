@@ -1,0 +1,44 @@
+---
+- name: Enable passwordless sudo
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    target_user: "{{ ansible_user | default(ansible_env.USER) }}"
+
+  tasks:
+    - name: Check if user is in sudo group
+      command: groups {{ target_user }}
+      register: user_groups
+      changed_when: false
+
+    - name: Add user to sudo group
+      user:
+        name: "{{ target_user }}"
+        groups: sudo
+        append: true
+      when: "'sudo' not in user_groups.stdout"
+
+    - name: Create sudoers file for passwordless sudo
+      copy:
+        content: |
+          # Allow {{ target_user }} to run sudo commands without password
+          {{ target_user }} ALL=(ALL) NOPASSWD:ALL
+        dest: "/etc/sudoers.d/{{ target_user }}-nopasswd"
+        mode: '0440'
+        owner: root
+        group: root
+        validate: 'visudo -cf %s'
+
+    - name: Verify sudo configuration
+      command: sudo -n true
+      become: false
+      become_user: "{{ target_user }}"
+      changed_when: false
+
+    - name: Success message
+      debug:
+        msg:
+          - "Passwordless sudo has been enabled for {{ target_user }}!"
+          - "You can now run sudo commands without entering a password."
+          - "Note: This reduces security - only use on trusted systems."
