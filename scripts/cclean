@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# cclean - safely clean build directory contents
+# Only works if the current directory starts with 'build'
+
+current_dir=$(basename "$PWD")
+
+if [[ "$current_dir" == build* ]]; then
+    echo "Cleaning build directory contents..."
+    rm -rf ./*
+    echo "Build directory cleaned."
+else
+    echo "Error: Current directory does not start with 'build'. Safety check failed."
+    echo "Current directory: $current_dir"
+    exit 1
+fi
