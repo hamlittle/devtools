@@ -6,6 +6,11 @@ ZLIB_ARCHIVE="zlib-$ZLIB_VERSION.tar.gz"
 ZLIB_URL="https://zlib.net/fossils/$ZLIB_ARCHIVE"
 ZLIB_DIR="zlib-$ZLIB_VERSION"
 
+# Number of parallel jobs (default to all CPU cores)
+JOBS=${1:-$(nproc)}
+
+echo "🔧 Using $JOBS parallel jobs"
+
 # Create temporary directory and change to it
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
@@ -22,6 +27,6 @@ tar xf "$ZLIB_ARCHIVE"
 echo "🚀 Running build benchmark with hyperfine..."
 hyperfine \
   --prepare "rm -rf $ZLIB_DIR && tar xf $ZLIB_ARCHIVE && cd $ZLIB_DIR && ./configure" \
-  "cd $ZLIB_DIR && make -j$(nproc) > /dev/null"
+  "cd $ZLIB_DIR && make -j$JOBS > /dev/null"
 
 echo "✅ Benchmark complete."

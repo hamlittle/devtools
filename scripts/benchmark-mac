@@ -8,6 +8,11 @@ ZLIB_DIR="zlib-$ZLIB_VERSION"
 
 export CC=clang
 
+# Number of parallel jobs (default to all CPU cores)
+JOBS=${1:-$(sysctl -n hw.ncpu)}
+
+echo "🔧 Using $JOBS parallel jobs"
+
 # Create temporary directory and change to it
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
@@ -27,6 +32,6 @@ hyperfine \
     sed -i '' '/# *define fdopen.*NULL/d' zutil.h && \
     ./configure
   " \
-  "cd $ZLIB_DIR && make -j$(sysctl -n hw.ncpu) > /dev/null"
+  "cd $ZLIB_DIR && make -j$JOBS > /dev/null"
 
 echo "✅ Benchmark complete."
