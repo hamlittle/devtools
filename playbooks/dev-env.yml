@@ -23,6 +23,20 @@
         update: true
       tags: [never, force]
 
+    - name: Create devtools/bin
+      file:
+        path: "{{ home_dir }}/devtools/bin"
+        state: directory
+        mode: '0755'
+      tags: [devtools]
+
+    - name: Create devtools/download
+      file:
+        path: "{{ home_dir }}/devtools/download"
+        state: directory
+        mode: '0755'
+      tags: [devtools]
+
     - name: Install packages
       become: true
       apt:
