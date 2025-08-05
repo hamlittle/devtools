@@ -46,6 +46,24 @@
         update_cache: true
       tags: [packages]
 
+    - name: Install GitHub CLI
+      become: true
+      block:
+        - name: Add GitHub CLI apt key
+          apt_key:
+            url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
+            keyring: /usr/share/keyrings/githubcli-archive-keyring.gpg
+
+        - name: Add GitHub CLI repository
+          apt_repository:
+            repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+
+        - name: Install gh
+          apt:
+            name: gh
+            update_cache: true
+      tags: [packages]
+
     - name: Add fish shell PPA
       become: true
       apt_repository:
