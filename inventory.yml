@@ -1,10 +1,13 @@
-hayden:
+all:
   hosts:
     localhost:
       ansible_connection: local
     test:
       ansible_user: hlittle
       ansible_host: 192.168.1.174
+
+hayden:
+  hosts:
     device-server-9:
       ansible_user: hlittle
       ansible_host: 10.0.121.35
