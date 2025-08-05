@@ -6,7 +6,13 @@ end
 
 fish_add_path "$HOME/devtools/bin"
 fish_add_path "$HOME/devtools/scripts"
+
 fish_add_path "/usr/local/go/bin"
+fish_add_path "$HOME/go/bin"
+
+source "$HOME/.cargo/env.fish"
+
+zoxide init fish | source
 
 alias lgi='lazygit'
 
@@ -18,6 +24,3 @@ function y
 	end
 	rm -f -- "$tmp"
 end
-
-source "$HOME/.cargo/env.fish"
-zoxide init fish | source
