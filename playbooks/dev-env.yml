@@ -194,3 +194,12 @@
       with_items:
         - github.com/jesseduffield/lazygit@latest
       tags: [utils]
+
+    - name: Manual steps
+      debug:
+        msg:
+          - "Dev environment installation complete."
+          - "Remember to:"
+          - "  1. gh auth login"
+          - "  -> Choose Github.com -> HTTPS -> Login with web browser -> Choose personal account"
+      tags: [manual]
