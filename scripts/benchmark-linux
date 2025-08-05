@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+ZLIB_VERSION="1.3"
+ZLIB_ARCHIVE="zlib-$ZLIB_VERSION.tar.gz"
+ZLIB_URL="https://zlib.net/fossils/$ZLIB_ARCHIVE"
+ZLIB_DIR="zlib-$ZLIB_VERSION"
+
+# Create temporary directory and change to it
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
+cd "$TMPDIR"
+
+echo "📁 Working in temporary directory: $TMPDIR"
+
+echo "📦 Downloading zlib $ZLIB_VERSION..."
+curl -LO "$ZLIB_URL"
+
+echo "📂 Extracting..."
+tar xf "$ZLIB_ARCHIVE"
+
+echo "🚀 Running build benchmark with hyperfine..."
+hyperfine \
+  --prepare "rm -rf $ZLIB_DIR && tar xf $ZLIB_ARCHIVE && cd $ZLIB_DIR && ./configure" \
+  "cd $ZLIB_DIR && make -j$(nproc) > /dev/null"
+
+echo "✅ Benchmark complete."
