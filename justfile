@@ -1,4 +1,5 @@
-shell := "/bin/bash"
+set shell := ["bash", "-uc"]
+
 venv := "source venv/bin/activate"
 
 # Show available commands
