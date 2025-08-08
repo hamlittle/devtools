@@ -52,6 +52,7 @@
           - hyperfine
           - neofetch
           - glances
+          - ripgrep
         update_cache: true
       tags: [packages]
 
