@@ -46,6 +46,7 @@
       become: true
       apt:
         name:
+          - build-essential
           - fzf
           - git
           - curl
