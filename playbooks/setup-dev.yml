@@ -159,9 +159,17 @@
       register: rustup_check
       tags: [utils, rust]
 
+    - name: Check if .cargo/env.fish is present
+      stat:
+        path: "{{ home_dir }}/.cargo/env.fish"
+      register: rustup_env_check
+      tags: [utils, rust]
+
     - name: Install rustup
       shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-      when: not rustup_check.stat.exists
+      args:
+        executable: /usr/bin/fish
+      when: not rustup_check.stat.exists or not rustup_env_check.stat.exists
       tags: [utils, rust]
 
     - name: Install rust plugins
