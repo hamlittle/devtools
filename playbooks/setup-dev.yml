@@ -32,14 +32,14 @@
       file:
         path: "{{ home_dir }}/devtools/bin"
         state: directory
-        mode: '0755'
+        mode: "0755"
       tags: [devtools]
 
     - name: Create devtools/download
       file:
         path: "{{ home_dir }}/devtools/download"
         state: directory
-        mode: '0755'
+        mode: "0755"
       tags: [devtools]
 
     - name: Install packages
@@ -97,8 +97,7 @@
       tags: [fish]
 
     - name: Install fisher
-      shell:
-        curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+      shell: curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
       args:
         executable: /usr/bin/fish
       tags: [fish]
@@ -114,16 +113,15 @@
       tags: [fish]
 
     - name: Configure tide
-      shell:
-        tide configure --auto \
-          --style=Lean \
-          --prompt_colors='16 colors' \
-          --show_time='24-hour format' \
-          --lean_prompt_height='Two lines' \
-          --prompt_connection=Disconnected \
-          --prompt_spacing=Compact \
-          --icons='Few icons' \
-          --transient=No
+      shell: tide configure --auto \
+        --style=Lean \
+        --prompt_colors='16 colors' \
+        --show_time='24-hour format' \
+        --lean_prompt_height='Two lines' \
+        --prompt_connection=Disconnected \
+        --prompt_spacing=Compact \
+        --icons='Few icons' \
+        --transient=No
       args:
         executable: /usr/bin/fish
       tags: [fish]
@@ -143,7 +141,7 @@
       file:
         path: "{{ home_dir }}/.config/fish"
         state: directory
-        mode: '0755'
+        mode: "0755"
       tags: [fish]
 
     - name: Symlink fish.conf
@@ -181,6 +179,31 @@
         - just
       tags: [utils]
 
+    - name: Check if existing yazi config is a regular file
+      stat:
+        path: "{{ home_dir }}/.config/yazi/yazi.toml"
+      register: yazi_config_stat
+      tags: [yazi]
+
+    - name: Backup existing yazi config (only if it's a regular file)
+      command: mv "{{ home_dir }}/.config/yazi/yazi.toml" "{{ home_dir }}/.config/yazi/yazi.toml.backup.{{ ansible_date_time.epoch }}"
+      when: yazi_config_stat.stat.exists and yazi_config_stat.stat.isreg
+      tags: [yazi]
+
+    - name: Create yazi config directory
+      file:
+        path: "{{ home_dir }}/.config/yazi"
+        state: directory
+        mode: "0755"
+      tags: [yazi]
+
+    - name: Symlink yazi.toml
+      file:
+        src: "{{ home_dir }}/devtools/dotfiles/yazi.toml"
+        dest: "{{ home_dir }}/.config/yazi/yazi.toml"
+        state: link
+      tags: [yazi]
+
     - name: Check if go is already installed
       stat:
         path: "/usr/local/go/bin/go"
@@ -203,7 +226,7 @@
           get_url:
             url: "https://go.dev/dl/{{ go_version }}.linux-{{ apt_repo_arch }}.tar.gz"
             dest: "/tmp/{{ go_version }}.linux-{{ apt_repo_arch }}.tar.gz"
-            mode: '0644'
+            mode: "0644"
 
         - name: Remove existing Go installation
           become: true
@@ -247,13 +270,13 @@
           file:
             path: /etc/apt/keyrings
             state: directory
-            mode: '0755'
+            mode: "0755"
 
         - name: Download Docker GPG key
           get_url:
             url: https://download.docker.com/linux/ubuntu/gpg
             dest: /etc/apt/keyrings/docker.asc
-            mode: '0644'
+            mode: "0644"
 
         - name: Add Docker repository
           apt_repository:
@@ -287,6 +310,6 @@
           - "  -> Choose Github.com -> HTTPS -> Login with web browser -> Choose personal account"
           - "  2. Enable AgentForwarding in /etc/ssh/sshd_config"
           - "  3. Configure global git settings"
-          - "  -> git config --global user.name \"Hamilton Little\""
-          - "  -> git config --global user.email \"<email>\""
+          - '  -> git config --global user.name "Hamilton Little"'
+          - '  -> git config --global user.email "<email>"'
       tags: [manual]
