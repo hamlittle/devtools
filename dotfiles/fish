@@ -15,11 +15,16 @@ fish_add_path "$HOME/devtools/scripts"
 fish_add_path "/usr/local/go/bin"
 fish_add_path "$HOME/go/bin"
 
+
+## Plugins #####################################################################
 # rust
 source "$HOME/.cargo/env.fish"
 
-# other
+# zoxide
 zoxide init fish | source
+
+# fzf
+fzf --fish | source
 
 
 ## Aliases #####################################################################
