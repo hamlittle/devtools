@@ -10,6 +10,7 @@ end
 # local
 fish_add_path "$HOME/devtools/bin"
 fish_add_path "$HOME/devtools/scripts"
+fish_add_path "$HOME/.local/bin"
 
 # go
 fish_add_path "/usr/local/go/bin"
