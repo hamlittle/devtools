@@ -17,3 +17,6 @@ hayden:
     small-yocto-builder:
       ansible_user: hlittle
       ansible_host: small-yocto-builder
+    cb1-eth:
+      ansible_user: hayden
+      ansible_host: cb1-eth
