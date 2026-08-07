@@ -1,5 +1,5 @@
-# ~/devtools/lima/isengard.yaml — multi-purpose arm64 Ubuntu 20.04 build box
-# (Ubuntu 20.04 pinned for Yocto toolchain compatibility.)
+# ~/devtools/lima/isengard.yaml — multi-purpose arm64 Ubuntu 22.04 build box
+# (Ubuntu 22.04 for Yocto toolchain compatibility.)
 #
 # Usage:
 #   limactl start ~/devtools/lima/isengard.yaml   # first-time create
@@ -23,7 +23,7 @@ user:
   name: "hamilton"
 
 images:
-  - location: "https://cloud-images.ubuntu.com/releases/20.04/release/ubuntu-20.04-server-cloudimg-arm64.img"
+  - location: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-arm64.img"
     arch: "aarch64"
 
 # tuned for an 18-core / 48 GB Mac: leaves 6 cores + 16 GB for macOS
