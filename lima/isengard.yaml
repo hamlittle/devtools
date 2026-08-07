@@ -31,6 +31,10 @@ cpus: 12
 memory: "32GiB"
 disk: "500GiB"           # single combined root + build disk, thin-provisioned
 
+# Forward the host SSH agent into the guest so your Mac key works for git/etc.
+ssh:
+  forwardAgent: true
+
 mountType: "virtiofs"
 mounts:
   - location: "~"              # whole Mac home
