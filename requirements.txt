@@ -1,1 +1,5 @@
 ansible
+# Pinned: cryptography >= 43 ships an aarch64 wheel whose OpenSSL crashes with
+# SIGILL (illegal instruction) inside Apple Virtualization.framework guests.
+# 42.0.8 is the newest version that runs there. Safe on x86 hosts too.
+cryptography==42.0.8
