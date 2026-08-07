@@ -1,0 +1,30 @@
+# ~/devtools/lima/yocto.yaml — arm64 Ubuntu 20.04 build box for Yocto
+#
+# Usage:
+#   limactl start ~/devtools/lima/yocto.yaml   # first-time create
+#   limactl start yocto                        # start existing
+#   limactl stop yocto                         # stop
+#   limactl shell yocto                        # enter
+#
+# After first login, symlink the host mount into your home:
+#   ln -s /mnt/hostfs ~/hostfs
+
+vmType: "vz"
+rosetta:
+  enabled: true          # run x86_64 binaries inside the arm64 guest
+  binfmt: true
+
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/20.04/release/ubuntu-20.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+
+# tuned for an 18-core / 48 GB Mac: leaves 6 cores + 16 GB for macOS
+cpus: 12
+memory: "32GiB"
+disk: "500GiB"           # single combined root + build disk, thin-provisioned
+
+mountType: "virtiofs"
+mounts:
+  - location: "~"              # whole Mac home
+    mountPoint: "/mnt/hostfs"  # neutral path; symlink to ~/hostfs inside the box
+    writable: true
