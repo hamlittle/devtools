@@ -41,5 +41,6 @@ function y
 end
 
 
-## Custom ####################################################################
+## Defaulted Exports #########################################################
 set -Ux AWS_PROFILE us
+set -Ux LIMA_INSTANCE isengard
