@@ -24,8 +24,8 @@ source "$HOME/.cargo/env.fish"
 # zoxide
 zoxide init fish | source
 
-# fzf
-fzf --fish | source
+# fzf (2>/dev/null: older fzf (<0.48) lacks --fish; skip integration silently)
+fzf --fish 2>/dev/null | source
 
 
 ## Aliases #####################################################################
