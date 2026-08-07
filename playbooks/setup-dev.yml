@@ -61,7 +61,6 @@
       apt:
         name:
           - build-essential
-          - fzf
           - git
           - curl
           - neofetch
@@ -271,6 +270,7 @@
       command: /usr/local/go/bin/go install {{ item }}
       with_items:
         - github.com/jesseduffield/lazygit@latest
+        - github.com/junegunn/fzf@latest
       tags: [utils]
 
     - name: Install Docker and Docker Compose
