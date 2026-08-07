@@ -42,6 +42,13 @@
         mode: "0755"
       tags: [devtools]
 
+    - name: Create ghostty config directory
+      file:
+        path: "{{ home_dir }}/.config/ghostty"
+        state: directory
+        mode: "0755"
+      tags: [ghostty]
+
     - name: Symlink ghostty config
       file:
         src: "{{ home_dir }}/devtools/dotfiles/ghostty"
