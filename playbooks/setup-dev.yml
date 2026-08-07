@@ -64,7 +64,6 @@
           - fzf
           - git
           - curl
-          - hyperfine
           - neofetch
           - glances
           - ripgrep
@@ -191,6 +190,7 @@
         - yazi-fm
         - zoxide
         - just
+        - hyperfine
       tags: [utils]
 
     - name: Check if existing yazi config is a regular file
