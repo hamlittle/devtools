@@ -1,10 +1,11 @@
-# ~/devtools/lima/yocto.yaml — arm64 Ubuntu 20.04 build box for Yocto
+# ~/devtools/lima/isengard.yaml — multi-purpose arm64 Ubuntu 20.04 build box
+# (Ubuntu 20.04 pinned for Yocto toolchain compatibility.)
 #
 # Usage:
-#   limactl start ~/devtools/lima/yocto.yaml   # first-time create
-#   limactl start yocto                        # start existing
-#   limactl stop yocto                         # stop
-#   limactl shell yocto                        # enter
+#   limactl start ~/devtools/lima/isengard.yaml   # first-time create
+#   limactl start isengard                        # start existing
+#   limactl stop isengard                         # stop
+#   limactl shell isengard                        # enter  (ssh: lima-isengard)
 #
 # After first login, symlink the host mount into your home:
 #   ln -s /mnt/hostfs ~/hostfs
