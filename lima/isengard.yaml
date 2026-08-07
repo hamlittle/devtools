@@ -49,3 +49,11 @@ provision:
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
       apt-get install -y build-essential git curl python3-venv python3-pip
+
+# Shared vmnet network: gives the guest a routable, host-pingable IP on the
+# 192.168.105.0/24 subnet (in addition to the default user-mode NAT for
+# outbound/port-forwarding). Requires host-side setup, see the repo notes:
+#   brew install socket_vmnet
+#   limactl sudoers | sudo tee /etc/sudoers.d/lima
+networks:
+  - lima: shared
