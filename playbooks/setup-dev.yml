@@ -183,11 +183,15 @@
       when: not rustup_check.stat.exists or not rustup_env_check.stat.exists
       tags: [utils, rust]
 
+    - name: Install yazi (yazi-fm + yazi-cli via yazi-build)
+      command:
+        cmd: "{{ home_dir }}/.cargo/bin/cargo install --force yazi-build"
+        creates: "{{ home_dir }}/.cargo/bin/yazi"
+      tags: [utils]
+
     - name: Install rust plugins
       command: "{{ home_dir }}/.cargo/bin/cargo install --locked {{ item }}"
       with_items:
-        - yazi-cli
-        - yazi-fm
         - zoxide
         - just
         - hyperfine
