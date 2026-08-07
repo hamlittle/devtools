@@ -6,6 +6,11 @@ font-thicken = true
 
 copy-on-select = clipboard
 
+# Auto-install the xterm-ghostty terminfo on remote SSH hosts (and export a
+# sane TERM), so curses apps (glances, htop, vim, ...) work over ssh without
+# "unknown terminal" / setupterm errors. Survives VM recreates.
+shell-integration-features = ssh-env,ssh-terminfo,cursor,title
+
 keybind = cmd+shift+-=new_split:down
 keybind = cmd+shift+\=new_split:right
 
