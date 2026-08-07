@@ -36,3 +36,16 @@ mounts:
   - location: "~"              # whole Mac home
     mountPoint: "/mnt/hostfs"  # neutral path; symlink to ~/hostfs inside the box
     writable: true
+
+# Minimal prerequisites so ./bootstrap.sh can run on a fresh box:
+#   - build-essential: cargo needs a C toolchain (`cc`) to compile `just`
+#   - python3-venv/pip: `just init` builds the ansible venv
+# The setup-dev playbook still does the actual environment setup.
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y build-essential git curl python3-venv python3-pip
