@@ -44,6 +44,8 @@ mounts:
 # Minimal prerequisites so ./bootstrap.sh can run on a fresh box:
 #   - build-essential: cargo needs a C toolchain (`cc`) to compile `just`
 #   - python3-venv/pip: `just init` builds the ansible venv
+#   - qemu-user-static: run 32-bit x86 tegra tools (e.g. mkbootimg) that
+#     Rosetta (x86_64-only) can't execute; required for the Jetson Yocto build
 # The setup-dev playbook still does the actual environment setup.
 provision:
   - mode: system
@@ -52,7 +54,7 @@ provision:
       set -eux
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
-      apt-get install -y build-essential git curl python3-venv python3-pip
+      apt-get install -y build-essential git curl python3-venv python3-pip qemu-user-static
 
 # Shared vmnet network: gives the guest a routable, host-pingable IP on the
 # 192.168.105.0/24 subnet (in addition to the default user-mode NAT for
