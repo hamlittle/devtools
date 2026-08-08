@@ -56,6 +56,23 @@ provision:
       apt-get update
       apt-get install -y build-essential git curl python3-venv python3-pip qemu-user-static
 
+  # 16 GiB swapfile so memory-hungry recipes (webkitgtk at high -j) can spill
+  # over the 32 GiB RAM cap instead of getting OOM-killed. Swap is disk-backed
+  # (slow/thrashy) but only bites during the one-time webkit compile; sstate
+  # skips it thereafter. Lives on the guest disk, so it never touches the Mac's
+  # RAM budget.
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux
+      if [ ! -f /swapfile ]; then
+        fallocate -l 16G /swapfile
+        chmod 600 /swapfile
+        mkswap /swapfile
+        grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+      fi
+      swapon --show | grep -q '/swapfile' || swapon /swapfile
+
 # Shared vmnet network: gives the guest a routable, host-pingable IP on the
 # 192.168.105.0/24 subnet (in addition to the default user-mode NAT for
 # outbound/port-forwarding). Requires host-side setup, see the repo notes:
