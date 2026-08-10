@@ -35,6 +35,12 @@ disk: "500GiB"           # single combined root + build disk, thin-provisioned
 ssh:
   forwardAgent: true
 
+# vzNAT: Apple Virtualization.framework native NAT. Gives the guest a
+# host-reachable IP (Apple's vmnet range, ~192.168.64.x) with NO socket_vmnet
+# and NO sudo. Host-only (not other guests, not the physical LAN). Needs vz.
+networks:
+  - vzNAT: true
+
 mountType: "virtiofs"
 mounts:
   - location: "~"              # whole Mac home
@@ -72,9 +78,3 @@ provision:
         grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
       fi
       swapon --show | grep -q '/swapfile' || swapon /swapfile
-
-# vzNAT: Apple Virtualization.framework native NAT. Gives the guest a
-# host-reachable IP (Apple's vmnet range, ~192.168.64.x) with NO socket_vmnet
-# and NO sudo. Host-only (not other guests, not the physical LAN). Needs vz.
-networks:
-  - vzNAT: true
