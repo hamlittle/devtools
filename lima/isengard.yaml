@@ -80,3 +80,7 @@ provision:
 #   limactl sudoers | sudo tee /etc/sudoers.d/lima
 networks:
   - lima: shared
+    # metric 300 keeps eth0 (user-mode NAT, metric 200) as the default route
+    # for internet; lima0 stays host<->guest only. Lima defaults vmnet to 100,
+    # which would otherwise hijack the default route.
+    metric: 300
