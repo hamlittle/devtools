@@ -73,14 +73,8 @@ provision:
       fi
       swapon --show | grep -q '/swapfile' || swapon /swapfile
 
-# Shared vmnet network: gives the guest a routable, host-pingable IP on the
-# 192.168.105.0/24 subnet (in addition to the default user-mode NAT for
-# outbound/port-forwarding). Requires host-side setup, see the repo notes:
-#   brew install socket_vmnet
-#   limactl sudoers | sudo tee /etc/sudoers.d/lima
+# vzNAT: Apple Virtualization.framework native NAT. Gives the guest a
+# host-reachable IP (Apple's vmnet range, ~192.168.64.x) with NO socket_vmnet
+# and NO sudo. Host-only (not other guests, not the physical LAN). Needs vz.
 networks:
-  - lima: shared
-    # metric 300 keeps eth0 (user-mode NAT, metric 200) as the default route
-    # for internet; lima0 stays host<->guest only. Lima defaults vmnet to 100,
-    # which would otherwise hijack the default route.
-    metric: 300
+  - vzNAT: true
