@@ -35,11 +35,15 @@ disk: "500GiB"           # single combined root + build disk, thin-provisioned
 ssh:
   forwardAgent: true
 
-# vzNAT: Apple Virtualization.framework native NAT. Gives the guest a
-# host-reachable IP (Apple's vmnet range, ~192.168.64.x) with NO socket_vmnet
-# and NO sudo. Host-only (not other guests, not the physical LAN). Needs vz.
+# Shared vmnet via socket_vmnet: host-reachable IP on 192.168.105.0/24.
+# We use this over vzNAT because vzNAT's fixed 192.168.64.0/24 collides with
+# the corp VPN (utun4 routes that subnet into the tunnel), making the guest
+# unreachable there. socket_vmnet lets us pick a non-conflicting subnet.
+# metric 300 keeps eth0 (usernet, metric 200) as the default route.
+# Host setup: brew install socket_vmnet && limactl sudoers | sudo tee /etc/sudoers.d/lima
 networks:
-  - vzNAT: true
+  - lima: shared
+    metric: 300
 
 mountType: "virtiofs"
 mounts:
