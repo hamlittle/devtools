@@ -44,3 +44,26 @@ end
 ## Defaulted Exports #########################################################
 set -Ux AWS_PROFILE us
 set -Ux LIMA_INSTANCE isengard
+
+
+## SSH key access for Claude #################################################
+# Load my SSH key into a persistent agent at a fixed path, so Claude (host or
+# Lima guest) can use it. Run once per boot; it prompts for the passphrase.
+function export-keys --description 'Load my SSH key into a persistent agent for Claude'
+    set -l sock "$HOME/.ssh/agent.sock"
+
+    # Key location: the host mount on the Lima guest, else the local key.
+    set -l key "$HOME/.ssh/id_ed25519"
+    test -e /mnt/hostfs/.ssh/id_ed25519; and set key /mnt/hostfs/.ssh/id_ed25519
+
+    # Start a persistent agent at the fixed path if none is live there.
+    env SSH_AUTH_SOCK="$sock" ssh-add -l >/dev/null 2>&1
+    if test $status -eq 2
+        rm -f "$sock"
+        ssh-agent -a "$sock" >/dev/null
+    end
+
+    # Load the key (prompts for the passphrase once).
+    env SSH_AUTH_SOCK="$sock" ssh-add "$key"
+    and echo "Key loaded at $sock — Claude can use it until the next reboot."
+end
