@@ -47,6 +47,11 @@ set -Ux LIMA_INSTANCE isengard
 
 
 ## SSH key access for Claude #################################################
+function lima-reload --description 'Reload host keys from lima VM'
+    ssh-keygen -R 192.168.105.2 2>/dev/null
+    ssh-keyscan 192.168.105.2 2>/dev/null >> ~/.ssh/known_hosts
+end
+
 # Load my SSH key into a persistent agent at a fixed path, so Claude (host or
 # Lima guest) can use it. Run once per boot; it prompts for the passphrase.
 function export-keys --description 'Load my SSH key into a persistent agent for Claude'
