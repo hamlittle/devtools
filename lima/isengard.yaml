@@ -27,7 +27,7 @@ images:
     arch: "aarch64"
 
 # tuned for an 18-core / 48 GB Mac: leaves 4 cores + 16 GB for macOS
-cpus: 14
+cpus: 12
 memory: "32GiB"
 disk: "500GiB"           # single combined root + build disk, thin-provisioned
 
