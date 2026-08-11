@@ -6,6 +6,13 @@ if status is-interactive
 end
 
 
+## Login banner ###############################################################
+# Show system info once per login shell (not on every split/tab/subshell).
+if status is-login
+    fastfetch
+end
+
+
 ## PATH stuff ##################################################################
 # local
 fish_add_path "$HOME/devtools/bin"
