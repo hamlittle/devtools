@@ -53,14 +53,14 @@ set -Ux AWS_PROFILE us
 set -Ux LIMA_INSTANCE isengard
 
 
-## SSH key access for Claude #################################################
+## Custom functions ##########################################################
+## Reload host keys from running lima instance (Claude)
 function lima-reload --description 'Reload host keys from lima VM'
     ssh-keygen -R 192.168.105.2 2>/dev/null
     ssh-keyscan 192.168.105.2 2>/dev/null >> ~/.ssh/known_hosts
 end
 
-# Load my SSH key into a persistent agent at a fixed path, so Claude (host or
-# Lima guest) can use it. Run once per boot; it prompts for the passphrase.
+## Export keys for non-interactive shell sessions (Claude)
 function export-keys --description 'Load my SSH key into a persistent agent for Claude'
     set -l sock "$HOME/.ssh/agent.sock"
 
@@ -78,4 +78,46 @@ function export-keys --description 'Load my SSH key into a persistent agent for 
     # Load the key (prompts for the passphrase once).
     env SSH_AUTH_SOCK="$sock" ssh-add "$key"
     and echo "Key loaded at $sock — Claude can use it until the next reboot."
+end
+
+## Export terminfo to CBox
+function export-terminfo -d "Export local terminfo to a remote device"
+    if test (count $argv) -eq 0
+        echo "Usage: export-terminfo <[user@]hostname> [target_user]"
+        echo "Example 1 (login user): export-terminfo cb2-eth"
+        echo "Example 2 (root user):  export-terminfo cb2-eth root"
+        return 1
+    end
+
+    set -l remote_target $argv[1]
+    set -l tmp_file "/tmp/ghostty_term.info"
+    
+    echo "=> Exporting local $TERM capabilities..."
+    infocmp > $tmp_file
+    
+    echo "=> Uploading to $remote_target..."
+    scp -q $tmp_file $remote_target:$tmp_file
+    
+    if test $status -ne 0
+        echo "Error: Failed to transfer terminfo to remote device."
+        rm -f $tmp_file
+        return 1
+    end
+
+    # Check if a target_user was provided as the second argument
+    if test (count $argv) -ge 2
+        set -l target_user $argv[2]
+        echo "=> Compiling terminfo for '$target_user' on $remote_target..."
+        echo "=> (You may be prompted for the $target_user password)"
+        ssh -t $remote_target "su $target_user -c 'tic -x $tmp_file' && rm -f $tmp_file"
+    else
+        echo "=> Compiling terminfo for the SSH login user on $remote_target..."
+        # Since we are already logged in as this user, no `su` or password is required
+        ssh -t $remote_target "tic -x $tmp_file && rm -f $tmp_file"
+    end
+    
+    # Clean up local file
+    rm -f $tmp_file
+    
+    echo "=> Box setup complete!"
 end
