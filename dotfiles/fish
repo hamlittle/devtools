@@ -61,7 +61,7 @@ function lima-reload --description 'Reload host keys from lima VM'
 end
 
 ## Export keys for non-interactive shell sessions (Claude)
-function export-keys --description 'Load my SSH key into a persistent agent for Claude'
+function claude-keys --description 'Load my SSH key into a persistent agent for Claude'
     set -l sock "$HOME/.ssh/agent.sock"
 
     # Key location: the host mount on the Lima guest, else the local key.
@@ -77,7 +77,7 @@ function export-keys --description 'Load my SSH key into a persistent agent for 
 
     # Load the key (prompts for the passphrase once).
     env SSH_AUTH_SOCK="$sock" ssh-add "$key"
-    and echo "Key loaded at $sock — Claude can use it until the next reboot."
+    and echo "Key loaded at $sock."
 end
 
 ## Export terminfo to CBox
