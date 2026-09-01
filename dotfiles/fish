@@ -80,38 +80,17 @@ function claude-keys --description 'Load my SSH key into a persistent agent for 
     and echo "Key loaded at $sock."
 end
 
-## Export terminfo to CBox
-function export-terminfo -d "Export local terminfo to a remote device"
-    if test (count $argv) -eq 0
-        echo "Usage: export-terminfo <[user@]hostname> [target_user]"
-        echo "Example 1 (login user): export-terminfo cb2-eth"
-        echo "Example 2 (root user):  export-terminfo cb2-eth root"
-        return 1
-    end
+## Export terminfo to a device (Claude)
+function export-terminfo -d "Export local terminfo to a remote device" --argument-names target
+    infocmp | ssh $target "tic -x -"
+end
 
-    set -l remote_target $argv[1]
-    set -l tmp_file "/tmp/ghostty_term.info"
-
-    infocmp > $tmp_file
-    scp -q $tmp_file $remote_target:$tmp_file
-
-    if test $status -ne 0
-        echo "Error: Failed to transfer terminfo to remote device."
-        rm -f $tmp_file
-        return 1
-    end
-
-    # Check if a target_user was provided as the second argument
-    if test (count $argv) -ge 2
-        set -l target_user $argv[2]
-        ssh -t $remote_target "su $target_user -c 'tic -x $tmp_file' && rm -f $tmp_file"
-    else
-        # Since we are already logged in as this user, no `su` or password is required
-        ssh -t $remote_target "tic -x $tmp_file && rm -f $tmp_file"
-    end
-
-    # Clean up local file
-    rm -f $tmp_file
+## ssh-copy-id, but for root (Claude)
+# `su -` and `~`: root's home is /home/root on these images, not /root.
+function copy-id-root -d "ssh-copy-id, but for root" --argument-names target
+    set -l key (ssh-add -L | head -n1)
+    echo "== Enter the ROOT password for $target =="
+    ssh -t $target "su - root -c 'mkdir -pm 700 ~/.ssh; grep -qxF \"$key\" ~/.ssh/authorized_keys 2>/dev/null || echo \"$key\" >> ~/.ssh/authorized_keys'"
 end
 
 ## Prep a fresh dev device end to end (Claude)
@@ -141,9 +120,10 @@ function dev-box --description 'Prep a dev device: reset host key, copy my key, 
     # 3. Install my SSH key as an authorized key on the device.
     ssh-copy-id $target
 
-    # 4. Export my terminfo for the SSH login user.
-    export-terminfo $target
+    # 4. Install my SSH key for root. Only step that needs the root password.
+    copy-id-root $target
 
-    # 5. And for root (compiled via `su root` on the device).
-    export-terminfo $target root
+    # 5. Export my terminfo for the login user and for root.
+    export-terminfo $target
+    export-terminfo root@$host
 end
