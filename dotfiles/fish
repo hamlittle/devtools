@@ -49,8 +49,8 @@ end
 
 
 ## Defaulted Exports #########################################################
-set -Ux AWS_PROFILE us
-set -Ux LIMA_INSTANCE isengard
+set -q AWS_PROFILE; or set -gx AWS_PROFILE us
+set -q LIMA_INSTANCE; or set -gx LIMA_INSTANCE isengard
 
 
 ## Custom functions ##########################################################
